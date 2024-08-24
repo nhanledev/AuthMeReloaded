@@ -24,6 +24,7 @@ import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.service.BukkitService;
 import fr.xephi.authme.service.CommonService;
 import fr.xephi.authme.service.SessionService;
+import fr.xephi.authme.service.GeoIpService;
 import fr.xephi.authme.service.bungeecord.BungeeSender;
 import fr.xephi.authme.service.bungeecord.MessageType;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
@@ -81,6 +82,9 @@ public class AsynchronousLogin implements AsynchronousProcess {
 
     @Inject
     private SessionService sessionService;
+
+    @Inject
+    private GeoIpService geoIpService;
 
     @Inject
     private BungeeSender bungeeSender;
@@ -274,6 +278,7 @@ public class AsynchronousLogin implements AsynchronousProcess {
             auth.setRealName(player.getName());
             auth.setLastLogin(System.currentTimeMillis());
             auth.setLastIp(ip);
+            auth.setLastLoginCountry(geoIpService.getCountryCode(ip));
             dataSource.updateSession(auth);
 
             // TODO: send an update when a messaging service will be implemented (SESSION)
@@ -285,6 +290,9 @@ public class AsynchronousLogin implements AsynchronousProcess {
             player.setNoDamageTicks(0);
 
             service.send(player, MessageKey.LOGIN_SUCCESS);
+
+            // Log login IP to database
+            dataSource.logSession(auth);
 
             // Other auths
             List<String> auths = dataSource.getAllAuthsByIp(auth.getLastIp());

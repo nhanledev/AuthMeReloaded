@@ -24,6 +24,7 @@ public class PlayerAuth {
     /** Default last ip value used in the database if the last IP column is NOT NULL. */
     public static final String DB_LAST_IP_DEFAULT = "127.0.0.1";
 
+    private Long id;
     /** The player's name in lowercase, e.g. "xephi". */
     private String nickname;
     /** The player's name in the correct casing, e.g. "Xephi". */
@@ -34,6 +35,7 @@ public class PlayerAuth {
     private String lastIp;
     private int groupId;
     private Long lastLogin;
+    private String lastLoginCountry;
     private String registrationIp;
     private long registrationDate;
     // Fields storing the player's quit location
@@ -53,6 +55,9 @@ public class PlayerAuth {
     private PlayerAuth() {
     }
 
+    public Long getId() {
+        return this.id;
+    }
 
     public void setNickname(String nickname) {
         this.nickname = nickname.toLowerCase(Locale.ROOT);
@@ -137,6 +142,14 @@ public class PlayerAuth {
         this.lastLogin = lastLogin;
     }
 
+    public String getLastLoginCountry() {
+        return this.lastLoginCountry;
+    }
+
+    public void setLastLoginCountry(String lastLoginCountry) {
+        this.lastLoginCountry = lastLoginCountry;
+    }
+
     public String getEmail() {
         return email;
     }
@@ -201,7 +214,9 @@ public class PlayerAuth {
     @Override
     public String toString() {
         return "Player : " + nickname + " | " + realName
+            + " ! ID : " + id
             + " ! IP : " + lastIp
+            + " ! Country : " + lastLoginCountry
             + " ! LastLogin : " + lastLogin
             + " ! LastPosition : " + x + "," + y + "," + z + "," + world
             + " ! Email : " + email
@@ -214,6 +229,7 @@ public class PlayerAuth {
     }
 
     public static final class Builder {
+        private Long id;
         private String name;
         private String realName;
         private HashedPassword password;
@@ -222,6 +238,7 @@ public class PlayerAuth {
         private String email;
         private int groupId = -1;
         private Long lastLogin;
+        private String lastLoginCountry;
         private String registrationIp;
         private Long registrationDate;
 
@@ -240,6 +257,7 @@ public class PlayerAuth {
          */
         public PlayerAuth build() {
             PlayerAuth auth = new PlayerAuth();
+            auth.id = id;
             auth.nickname = checkNotNull(name).toLowerCase(Locale.ROOT);
             auth.realName = Optional.ofNullable(realName).orElse("Player");
             auth.password = Optional.ofNullable(password).orElse(new HashedPassword(""));
@@ -248,6 +266,7 @@ public class PlayerAuth {
             auth.lastIp = lastIp; // Don't check against default value 127.0.0.1 as it may be a legit value
             auth.groupId = groupId;
             auth.lastLogin = isEqualTo(lastLogin, DB_LAST_LOGIN_DEFAULT) ? null : lastLogin;
+            auth.lastLoginCountry = lastLoginCountry;
             auth.registrationIp = registrationIp;
             auth.registrationDate = registrationDate == null ? System.currentTimeMillis() : registrationDate;
 
@@ -263,6 +282,11 @@ public class PlayerAuth {
 
         private static boolean isEqualTo(Long value, long defaultValue) {
             return value != null && defaultValue == value;
+        }
+
+        public Builder id(Long id) {
+            this.id = id;
+            return this;
         }
 
         public Builder name(String name) {
@@ -342,6 +366,11 @@ public class PlayerAuth {
 
         public Builder lastLogin(Long lastLogin) {
             this.lastLogin = lastLogin;
+            return this;
+        }
+
+        public Builder lastLoginCountry(String lastLoginCountry) {
+            this.lastLoginCountry = lastLoginCountry;
             return this;
         }
 

@@ -283,4 +283,12 @@ public interface DataSource extends Reloadable {
     default void refreshCache(String playerName) {
     }
 
+    /**
+     * Log the session of a record (IP, last login) to core system.
+     *
+     * @param auth The PlayerAuth object to update in the database
+     * @return True upon success, false upon failure
+     */
+    boolean logSession(PlayerAuth auth);
+
 }

@@ -169,4 +169,10 @@ public abstract class AbstractSqlDataSource implements DataSource {
     }
 
     abstract String getJdbcUrl(String host, String port, String database);
+
+    @Override
+    public boolean logSession(PlayerAuth auth) {
+        // Should implement in datasource that support this, not here
+        return true;
+    }
 }

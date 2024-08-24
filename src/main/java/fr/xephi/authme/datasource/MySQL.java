@@ -493,6 +493,7 @@ public class MySQL extends AbstractSqlDataSource {
         UUID uuid = col.PLAYER_UUID.isEmpty()
             ? null : UuidUtils.parseUuidSafely(row.getString(col.PLAYER_UUID));
         return PlayerAuth.builder()
+            .id(row.getLong(col.ID))
             .name(row.getString(col.NAME))
             .realName(row.getString(col.REAL_NAME))
             .password(row.getString(col.PASSWORD), salt)
@@ -511,5 +512,26 @@ public class MySQL extends AbstractSqlDataSource {
             .locPitch(row.getFloat(col.LASTLOC_PITCH))
             .uuid(uuid)
             .build();
+    }
+
+    /**
+     * Log the session info to core database.
+     * @param auth The user profile to log
+     * @return
+     */
+    @Override
+    public boolean logSession(PlayerAuth auth) {
+        // log type = 1: LOGIN_GAME
+        String sql = "INSERT INTO `activities`(`type`, `user_id`, `ip`, `country`) VALUES (1,?,?,?)";
+        try (Connection con = getConnection(); PreparedStatement pst = con.prepareStatement(sql)) {
+            pst.setLong(1, (auth.getId() != null) ? auth.getId() : 0);
+            pst.setString(2, auth.getLastIp());
+            pst.setString(3, auth.getLastLoginCountry());
+            pst.executeUpdate();
+            return true;
+        } catch (SQLException ex) {
+            logSqlException(ex);
+        }
+        return false;
     }
 }
