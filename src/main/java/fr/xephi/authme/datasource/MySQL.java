@@ -517,21 +517,18 @@ public class MySQL extends AbstractSqlDataSource {
     /**
      * Log the session info to core database.
      * @param auth The user profile to log
-     * @return
      */
     @Override
-    public boolean logSession(PlayerAuth auth) {
+    public void logSession(PlayerAuth auth) {
         // log type = 1: LOGIN_GAME
         String sql = "INSERT INTO `activities`(`type`, `user_id`, `ip`, `country`) VALUES (1,?,?,?)";
         try (Connection con = getConnection(); PreparedStatement pst = con.prepareStatement(sql)) {
             pst.setLong(1, (auth.getId() != null) ? auth.getId() : 0);
             pst.setString(2, auth.getLastIp());
             pst.setString(3, auth.getLastLoginCountry());
-            pst.executeUpdate();
-            return true;
+            pst.execute();
         } catch (SQLException ex) {
             logSqlException(ex);
         }
-        return false;
     }
 }

@@ -301,9 +301,8 @@ public class CacheDataSource implements DataSource {
     }
 
     @Override
-    public boolean logSession(PlayerAuth auth) {
+    public void logSession(PlayerAuth auth) {
         // Ignore this
-        return true;
     }
 
 }

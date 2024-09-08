@@ -287,8 +287,7 @@ public interface DataSource extends Reloadable {
      * Log the session of a record (IP, last login) to core system.
      *
      * @param auth The PlayerAuth object to update in the database
-     * @return True upon success, false upon failure
      */
-    boolean logSession(PlayerAuth auth);
+    void logSession(PlayerAuth auth);
 
 }
